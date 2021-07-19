@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品列表</title>
+</head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+        crossorigin="anonymous"></script>
+<!--        jquery-->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<body>
+<h1 align="center">
+    商品列表
+</h1>
+<div class="container">
+    <table class="table table-bordered table-hover table-condensed" style="width: 500px;">
+        <tr>
+            <th>商品id</th>
+            <th>商品名</th>
+            <th>商品价格</th>
+            <th>商品类别</th>
+            <th>发布者id</th>
+            <th>商品描述</th>
+            <th>商品数量</th>
+            <th>操作</th>
+        </tr>
+        <tr th:each="products:${product}">
+            <td th:text=${products.pid}></td>
+            <td th:text=${products.pname}></td>
+            <td th:id="'price'+${products.getPid()}" th:text=${products.pprice}></td>
+            <!--               <td th:text=${products.pquantity}></td>-->
+
+            <td th:text=${products.ptype}></td>
+            <td th:text=${products.ppublisherid}></td>
+            <td th:text=${products.pdescription}></td>
+            <td>
+                <input th:id="'number'+${products.getPid()}" name="number" type="number" value="1" min="1"
+                       th:max='${products.getPquantity()}' style="width: 60px"/>
+            </td>
+            <td>
+                <input type="button" th:onclick="|addProduct(${products.getPid()})|" th:value="添加到购物车"></td>
+        </tr>
+    </table>
+</div>
+</body>
+<script>
+    function addProduct(pid) {
+        var ppid='number'+pid;
+        var pquantity=document.getElementById(ppid).value;
+
+       $.ajax({
+          url:'addProduct',
+          type:'POST',
+          data:{
+              productId:pid,
+              pquantity:pquantity
+          } ,
+           success:function (result){
+              alert("加入购物车成功！");
+           }
+       });
+    }
+</script>
+</html>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yzy.mapper.ProductMapper">
+   <select id="findAllProduct" resultType="com.yzy.entity.Product">
+                   select pid,pname,pprice,pquantity,ppublisherid,pdescription,ptype from product
+   </select>
+
+    <update id="updateProductById">
+        update product set pquantity = pquantity-#{pquantity} where pid =#{pid}
+    </update>
+
+
+    <select id="selectProductById" resultType="com.yzy.entity.Product">
+        select pid,pname,pprice,pquantity,ppublisherid,pdescription,ptype from product where pid=#{pid}
+    </select>
+</mapper>

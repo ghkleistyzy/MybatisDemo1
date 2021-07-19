@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yzy.mapper.CartMapper">
+    <!--    <select id="findAllByUserId" resultType="com.yzy.entity.Cart">-->
+    <!--        SELECT cid,cname,cprice,cquantity,ctotalprice,uid FROM cart where uid =#{uid}-->
+    <!--    </select>-->
+    <!--cid,cname,cprice,cquantity,ctotalprice,uid-->
+    <delete id="deletePoductById">
+        delete
+        from cart
+        where cid = #{cid}
+    </delete>
+
+
+    <resultMap id="cartMap" type="com.yzy.entity.Cart">
+        <id column="cid" property="cid"></id>
+        <result column="cname" property="cname"></result>
+        <result column="cprice" property="cprice"></result>
+        <result column="cquantity" property="cquantity"></result>
+        <!--        <result column="ctotalprice" property="ctotalprice"></result>-->
+        <result column="uid" property="uid"></result>
+        <result column="pquantity" property="productMax"></result>
+    </resultMap>
+    <select id="findAllByUserId" resultMap="cartMap">
+        SELECT c.cid,
+               c.cname,
+               c.cprice,
+               c.cquantity,
+               c.uid,
+               p.pquantity
+        FROM cart c
+                 INNER JOIN product p
+        WHERE c.cid = p.pid
+          and c.uid = #{uid}
+    </select>
+
+
+    <insert id="addProductById">
+        insert into cart(cid, cname, cprice, cquantity, uid)
+        values (#{cid}, #{cname}, #{cprice}, #{cquantity}, #{uid})
+    </insert>
+
+    <select id="findProductById" resultType="com.yzy.entity.Cart">
+        select cid,cname,cprice,cquantity,uid from cart where cid =#{cid}
+    </select>
+
+    <update id="updateCartById">
+        update cart set cquantity=cquantity+#{cquantity} where cid=#{cid}
+    </update>
+</mapper>

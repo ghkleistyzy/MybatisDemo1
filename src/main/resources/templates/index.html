@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>购物车</title>
+</head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+        integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+        crossorigin="anonymous"></script>
+<!--        jquery-->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<body>
+<h1 align="center">购物车</h1>
+<div class="container">
+    <table class="table table-bordered table-hover table-condensed" style="width: 500px;">
+        <tr>
+            <th>商品id</th>
+            <th>商品名</th>
+            <th>商品价格</th>
+            <th>商品数量</th>
+<!--            <th>商品小计</th>-->
+            <th>操作</th>
+        </tr>
+        <tr th:each="carts:${cart}">
+            <td th:text=${carts.cid}></td>
+            <td th:text=${carts.cname}></td>
+            <td th:id="'price'+${carts.getCid()}" th:text=${carts.cprice}></td>
+
+            <td>
+                <input th:id="'number'+${carts.getCid()}" name="number" type="number" th:value=${carts.cquantity} min="1" th:max='${carts.getProductMax()}' style="width: 60px"/>
+                <input th:id="'selector'+${carts.getCid()}" type="checkbox" th:value="${carts.getCid()}"/>
+            </td>
+<!--            <td th:text=${carts.ctotalprice}></td>-->
+            <td><a th:href="@{/deleteProduct(cid=${carts.cid},uid=${carts.uid})}" th:text="移除"></a></td>
+        </tr>
+
+    </table>
+    <div class="row">
+        <div class="col-lg-11"></div>
+        <div class="col=lg-1">
+            <button class="btn-primary lead" onclick="placeCart()">结算</button>
+        </div>
+    </div>
+</div>
+<a th:href="@{/queryAllProduct}">返回商品列表</a>
+</body>
+<script>
+    function placeCart(){
+        const selectedProductMap =new Map();
+        let totalPrice=0;
+        $('input:checked').each(function (){
+            selectedProductMap.set(parseInt($(this).val()),parseInt($(this).prev().val()));
+            const currentProductPriceId = "#price" + $(this).val();
+            totalPrice += parseFloat($(currentProductPriceId).text()) * parseInt($(this).prev().val());
+        });
+        if (selectedProductMap.size==0){
+            alert("未选择商品");
+            return;
+        }
+        const data =mapToJSON(selectedProductMap);
+
+
+        $.ajax({
+            url:'placecart',
+            type:'POST',
+            data:{
+                selectedProductMap: data,
+                totalPrice: totalPrice
+            },
+            success:function (result) {
+                alert("下单成功,总价为"+totalPrice);
+            }
+        });
+
+    }
+    // map类型转化成JSON字符串格式
+    function mapToJSON(map){
+        let data = "{";
+        let i = 1;
+        map.forEach(function (item, key, mapObj) {
+            if(mapObj.size === i){
+                data += '"'+ key+'":"'+ item + '"';
+            }else{
+                data += '"'+ key+'":"'+ item + '",';
+            }
+            i++;
+        });
+        data +='}';
+        return data;
+    }
+</script>
+</html>
